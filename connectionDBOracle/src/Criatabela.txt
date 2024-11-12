@@ -1,0 +1,13 @@
+create table USUARIO(id number not null primary key, nome varchar2(45) not null, email varchar2(100) not null, dataCadastro date not null);
+
+create sequence SEQ_ID_USUARIO start with 1 INCREMENTE by 1;
+
+CREATE OR REPLACE TRIGGER TR_INSERT_USUARIO
+BEFORE INSERT ON USUARIO FOR EACH ROW
+BEGIN
+SELECT SEQ_ID_USUARIO.nextval
+INTO :NEW.ID
+DROM DUAL;
+END;
+/
+COMMIT;

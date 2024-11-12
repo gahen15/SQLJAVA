@@ -13,6 +13,7 @@ import br.com.fiap.model.Usuario;
 public class UsuarioDAO {
 
 	private Connection connection;
+	
 
 	public UsuarioDAO(Connection connection) {
 		this.connection = new ConnectionFactory().conectar();
