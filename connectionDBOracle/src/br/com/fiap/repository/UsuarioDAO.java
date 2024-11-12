@@ -27,11 +27,12 @@ public class UsuarioDAO {
 			stmt.setString(1, usuario.getNome());
 			stmt.setString(2, usuario.getEmail());
 			stmt.setDate(3, usuario.getDataCadastro());
-
+			 
 			stmt.execute();
 			stmt.close();
 
 		}
+		
 
 	}
 

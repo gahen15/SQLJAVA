@@ -3,7 +3,7 @@ package br.com.fiap.teste;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Scanner;
+import javax.swing.JOptionPane;
 
 import br.com.fiap.connection.ConnectionFactory;
 import br.com.fiap.model.Usuario;
@@ -12,8 +12,6 @@ import br.com.fiap.repository.UsuarioDAO;
 public class Teste {
 
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        
         // Testar conexão e realizar operações de CRUD
         try (Connection connection = ConnectionFactory.getConnection()) {
             // Criar o DAO de usuário
@@ -22,16 +20,12 @@ public class Teste {
             int opcao;
             do {
                 // Exibir o menu
-                exibirMenu();
+                opcao = exibirMenu();
                 
-                // Capturar a opção do usuário
-                opcao = scanner.nextInt();
-                scanner.nextLine(); // Consumir a quebra de linha
-
                 switch (opcao) {
                     case 1:
                         // Inserir um novo usuário
-                        inserirUsuario(usuarioDAO, scanner);
+                        inserirUsuario(usuarioDAO);
                         break;
                     case 2:
                         // Listar todos os usuários
@@ -39,52 +33,58 @@ public class Teste {
                         break;
                     case 3:
                         // Atualizar um usuário
-                        atualizarUsuario(usuarioDAO, scanner);
+                        atualizarUsuario(usuarioDAO);
                         break;
                     case 4:
                         // Excluir um usuário
-                        excluirUsuario(usuarioDAO, scanner);
+                        excluirUsuario(usuarioDAO);
                         break;
                     case 5:
                         // Sair
-                        System.out.println("Saindo do sistema...");
+                        JOptionPane.showMessageDialog(null, "Saindo do sistema...");
                         break;
                     default:
-                        System.out.println("Opção inválida! Tente novamente.");
+                        JOptionPane.showMessageDialog(null, "Opção inválida! Tente novamente.");
                 }
             } while (opcao != 5);
 
         } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            scanner.close();
+            JOptionPane.showMessageDialog(null, "Erro de conexão com o banco de dados: " + e.getMessage());
         }
     }
 
-    private static void exibirMenu() {
-        System.out.println("\nEscolha uma opção:");
-        System.out.println("1 - Inserir um novo usuário");
-        System.out.println("2 - Listar todos os usuários");
-        System.out.println("3 - Atualizar um usuário");
-        System.out.println("4 - Excluir um usuário");
-        System.out.println("5 - Sair");
-        System.out.print("Opção: ");
+    private static int exibirMenu() {
+        // Exibir o menu usando uma caixa de diálogo de opção
+        String menu = "Escolha uma opção:\n" +
+                      "1 - Inserir um novo usuário\n" +
+                      "2 - Listar todos os usuários\n" +
+                      "3 - Atualizar um usuário\n" +
+                      "4 - Excluir um usuário\n" +
+                      "5 - Sair";
+
+        String opcaoString = JOptionPane.showInputDialog(null, menu, "Menu", JOptionPane.INFORMATION_MESSAGE);
+        try {
+            return Integer.parseInt(opcaoString);
+        } catch (NumberFormatException e) {
+            return -1; // Caso o usuário digite algo que não seja um número
+        }
     }
 
-    private static void inserirUsuario(UsuarioDAO usuarioDAO, Scanner scanner) {
-        System.out.print("Informe o nome do usuário: ");
-        String nome = scanner.nextLine();
-        
-        System.out.print("Informe o email do usuário: ");
-        String email = scanner.nextLine();
-        
-        Usuario novoUsuario = new Usuario(nome, email);
-        
-        try {
-            usuarioDAO.insert(novoUsuario);
-            System.out.println("Usuário inserido com ID: " + novoUsuario.getId());
-        } catch (SQLException e) {
-            System.out.println("Erro ao inserir o usuário: " + e.getMessage());
+    private static void inserirUsuario(UsuarioDAO usuarioDAO) {
+        String nome = JOptionPane.showInputDialog("Informe o nome do usuário:");
+        String email = JOptionPane.showInputDialog("Informe o email do usuário:");
+
+        if (nome != null && email != null && !nome.trim().isEmpty() && !email.trim().isEmpty()) {
+            Usuario novoUsuario = new Usuario(nome, email);
+
+            try {
+                usuarioDAO.insert(novoUsuario);
+                JOptionPane.showMessageDialog(null, "Usuário inserido com ID: " + novoUsuario.getId());
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(null, "Erro ao inserir o usuário: " + e.getMessage());
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Nome e email não podem ser vazios.");
         }
     }
 
@@ -92,55 +92,61 @@ public class Teste {
         try {
             List<Usuario> usuarios = usuarioDAO.selectAll();
             if (usuarios.isEmpty()) {
-                System.out.println("Nenhum usuário encontrado.");
+                JOptionPane.showMessageDialog(null, "Nenhum usuário encontrado.");
             } else {
-                System.out.println("\nLista de Usuários:");
+                StringBuilder lista = new StringBuilder("Lista de Usuários:\n");
                 for (Usuario u : usuarios) {
-                    System.out.println(u.getId() + ": " + u.getNome() + " - " + u.getEmail());
+                    lista.append(u.getId()).append(": ").append(u.getNome()).append(" - ").append(u.getEmail()).append("\n");
                 }
+                JOptionPane.showMessageDialog(null, lista.toString());
             }
         } catch (SQLException e) {
-            System.out.println("Erro ao listar os usuários: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Erro ao listar os usuários: " + e.getMessage());
         }
     }
 
-    private static void atualizarUsuario(UsuarioDAO usuarioDAO, Scanner scanner) {
-        System.out.print("Informe o ID do usuário que deseja atualizar: ");
-        long id = scanner.nextLong();
-        scanner.nextLine(); // Consumir a quebra de linha
+    private static void atualizarUsuario(UsuarioDAO usuarioDAO) {
+        String idString = JOptionPane.showInputDialog("Informe o ID do usuário que deseja atualizar:");
         
         try {
+            long id = Long.parseLong(idString);
             Usuario usuario = usuarioDAO.selectById(id);
+
             if (usuario == null) {
-                System.out.println("Usuário não encontrado.");
+                JOptionPane.showMessageDialog(null, "Usuário não encontrado.");
                 return;
             }
 
-            System.out.print("Informe o novo nome do usuário: ");
-            String nome = scanner.nextLine();
-            System.out.print("Informe o novo email do usuário: ");
-            String email = scanner.nextLine();
+            String nome = JOptionPane.showInputDialog("Informe o novo nome do usuário:");
+            String email = JOptionPane.showInputDialog("Informe o novo email do usuário:");
 
-            usuario.setNome(nome);
-            usuario.setEmail(email);
-            usuarioDAO.update(usuario);
-            System.out.println("Usuário atualizado com sucesso: " + usuario.getNome());
+            if (nome != null && email != null && !nome.trim().isEmpty() && !email.trim().isEmpty()) {
+                usuario.setNome(nome);
+                usuario.setEmail(email);
+                usuarioDAO.update(usuario);
+                JOptionPane.showMessageDialog(null, "Usuário atualizado com sucesso: " + usuario.getNome());
+            } else {
+                JOptionPane.showMessageDialog(null, "Nome e email não podem ser vazios.");
+            }
 
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "ID inválido.");
         } catch (SQLException e) {
-            System.out.println("Erro ao atualizar o usuário: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Erro ao atualizar o usuário: " + e.getMessage());
         }
     }
 
-    private static void excluirUsuario(UsuarioDAO usuarioDAO, Scanner scanner) {
-        System.out.print("Informe o ID do usuário que deseja excluir: ");
-        long id = scanner.nextLong();
-        scanner.nextLine(); // Consumir a quebra de linha
+    private static void excluirUsuario(UsuarioDAO usuarioDAO) {
+        String idString = JOptionPane.showInputDialog("Informe o ID do usuário que deseja excluir:");
         
         try {
+            long id = Long.parseLong(idString);
             usuarioDAO.delete(id);
-            System.out.println("Usuário excluído com sucesso! ID: " + id);
+            JOptionPane.showMessageDialog(null, "Usuário excluído com sucesso! ID: " + id);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "ID inválido.");
         } catch (SQLException e) {
-            System.out.println("Erro ao excluir o usuário: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Erro ao excluir o usuário: " + e.getMessage());
         }
     }
 }
