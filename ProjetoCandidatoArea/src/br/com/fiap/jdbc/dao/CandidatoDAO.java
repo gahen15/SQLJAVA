@@ -79,12 +79,13 @@ public class CandidatoDAO {
 			while (rs.next()) {
 				Candidato candidato = new Candidato();
 				candidato.setNome(rs.getString("nome"));
-				candidato.setNome(rs.getString("nome"));
-				candidato.setNome(rs.getString("nome"));
-				candidato.setNome(rs.getString("nome"));
-				candidato.setNome(rs.getString("nome"));
-				candidato.setNome(rs.getString("nome"));
-				
+				candidato.setTelefone(rs.getString("telefone"));
+				candidato.setEmail(rs.getString("email"));
+				candidato.setEndereco(rs.getString("endereco"));
+				candidato.setFormacao(rs.getString("formacao"));
+				candidato.setDataNasc(rs.getDate("dataNasc"));
+				candidato.setTempoExp(rs.getFloat("tempoFormacao"));
+				candidato.setGenero(rs.getString("genero"));
 			}
 			
 			

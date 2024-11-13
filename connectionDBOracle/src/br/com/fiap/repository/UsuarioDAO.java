@@ -13,7 +13,6 @@ import br.com.fiap.model.Usuario;
 public class UsuarioDAO {
 
 	private Connection connection;
-	
 
 	public UsuarioDAO(Connection connection) {
 		this.connection = new ConnectionFactory().conectar();
@@ -27,12 +26,11 @@ public class UsuarioDAO {
 			stmt.setString(1, usuario.getNome());
 			stmt.setString(2, usuario.getEmail());
 			stmt.setDate(3, usuario.getDataCadastro());
-			 
+
 			stmt.execute();
 			stmt.close();
 
 		}
-		
 
 	}
 
@@ -83,30 +81,31 @@ public class UsuarioDAO {
 			stmt.close();
 		}
 
-	
 		return usuarios;
 	}
 
 	// selectById
-	
+
 	// selectById
 	public Usuario selectById(long id) throws SQLException {
 		String sql = "SELECT * FROM usuario WHERE id = ?";
-        Usuario usuario = null;
+		Usuario usuario = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setLong(1, id);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    usuario = new Usuario();
-                    usuario.setId(rs.getLong("id"));
-                    usuario.setNome(rs.getString("nome"));
-                    usuario.setEmail(rs.getString("email"));
-                    usuario.setDataCadastro(rs.getDate("dataCadastro"));
-		
-		
-	stmt.close();
+		try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+			stmt.setLong(1, id);
+			try (ResultSet rs = stmt.executeQuery()) {
+				if (rs.next()) {
+					usuario = new Usuario();
+					usuario.setId(rs.getLong("id"));
+					usuario.setNome(rs.getString("nome"));
+					usuario.setEmail(rs.getString("email"));
+					usuario.setDataCadastro(rs.getDate("dataCadastro"));
+
+					stmt.close();
+				}
+
+			}
+		}
+		return usuario;
 	}
-
-}}
-		return usuario;}}
+}

@@ -81,9 +81,11 @@ public class Candidato {
 			return java.sql.Date.valueOf(dataNasc);
 		}
 
-		public void setDataNasc(LocalDate dataNasc) {
-			this.dataNasc = dataNasc;
+		public void setDataNasc(java.sql.Date dataNasc) {
+	
+		    this.dataNasc = dataNasc.toLocalDate();
 		}
+
 
 		public float getTempoExp() {
 			return tempoExp;
@@ -105,10 +107,27 @@ public class Candidato {
 			return genero.name();
 		}
 
-		public void setGenero(Genero genero) {
-			this.genero = genero;
-		}
-	
+		
+		
+
+		    public void setGenero(String genero) {
+		        if (genero != null) {
+		            try {
+		               
+		                this.genero = Genero.valueOf(genero.trim().toUpperCase());
+		            } catch (IllegalArgumentException e) {
+		              
+		                this.genero = Genero.NAO_INFORMADO;
+		            }
+		        } else {
+		  
+		            this.genero = Genero.NAO_INFORMADO;
+		        }
+		    }
+
+		  
+
+
 	
 	
 	
